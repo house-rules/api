@@ -8,7 +8,7 @@ const BasicStrategy   = require('passport-http').BasicStrategy;
 router.get("/", function(req, res) {
   console.log('<----get @ /---->');
   console.log('req---> ', req);
-  res.status('200').send("Hiya");
+  res.status('200').send({status: "200", message: 'Everything is fine, we\'re fine', requestBody: req.body});
 });
 
 router.post("/", function(req, res) {

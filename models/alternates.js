@@ -1,9 +1,11 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var Alternate = sequelize.define('Alternate', {
-    deckId: DataTypes.INTEGER,
-    front: DataTypes.STRING,
-    back: DataTypes.STRING
+    gameId:    DataTypes.INTEGER,
+    userId:    DataTypes.INTEGER,
+    title:     DataTypes.STRING,
+    objective: DataTypes.STRING,
+    rules:     DataTypes.STRING
   }, {});
 
   Alternate.associate = function(models) {
@@ -11,9 +13,13 @@ module.exports = function(sequelize, DataTypes) {
       as: "Games",
       foreignKey: "gameId"
     })
-    Alternat.belongsTo(models.User, {
+    Alternate.belongsTo(models.User, {
       as: "Users",
       foreignKey: "userId"
+    })
+    Alternate.hasMany(models.Like, {
+      as: "Likes",
+      foreignKey: "alternateId"
     })
   };
 

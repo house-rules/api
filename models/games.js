@@ -1,9 +1,13 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var Deck = sequelize.define('Game', {
-    title: DataTypes.STRING,
-    userId: DataTypes.INTEGER,
-    description: DataTypes.STRING
+  var Game = sequelize.define('Game', {
+    userId:             DataTypes.INTEGER,
+    title:              DataTypes.STRING,
+    category:           DataTypes.STRING,
+    numberOfPlayers:    DataTypes.STRING,
+    playerAgeRange:     DataTypes.STRING,
+    objective:          DataTypes.STRING,
+    rules:              DataTypes.STRING
   }, {});
 
   Game.associate = function(models) {
