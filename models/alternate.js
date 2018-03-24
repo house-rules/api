@@ -1,11 +1,11 @@
 'use strict';
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   var Alternate = sequelize.define('Alternate', {
-    gameId:    DataTypes.INTEGER,
-    userId:    DataTypes.INTEGER,
-    title:     DataTypes.STRING,
-    objective: DataTypes.STRING,
-    rules:     DataTypes.STRING
+    gameId:       DataTypes.INTEGER,
+    userId:       DataTypes.INTEGER,
+    title:        DataTypes.STRING,
+    objective:    DataTypes.STRING,
+    rules:        DataTypes.STRING(5000)
   }, {});
 
   Alternate.associate = function(models) {

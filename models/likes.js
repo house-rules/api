@@ -1,7 +1,7 @@
 'use strict';
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   var Like = sequelize.define('Like', {
-    userId:      DataTypes.STRING,
+    userId:      DataTypes.INTEGER,
     alternateId: DataTypes.INTEGER
   }, {});
 

@@ -1,10 +1,10 @@
 'use strict';
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   var User = sequelize.define('User', {
-    email:        DataTypes.STRING,
-    username:     DataTypes.STRING,
-    password:     DataTypes.STRING,
-    salt:         DataTypes.STRING
+    username: DataTypes.STRING,
+    email:    DataTypes.STRING,
+    password: DataTypes.STRING,
+    salt:     DataTypes.STRING
   }, {});
 
   User.associate = function(models) {
