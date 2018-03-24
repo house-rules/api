@@ -69,7 +69,11 @@ router.get('/gameList', function(req, res) {
   console.log('<----get @ /gameList ---->');
   console.log('req/gameList---> ', req.body);
 
-  // models.Game.findAll({})
+  // models.Game.findAll({
+  //   include: [
+  //     {model: models.Alternate, as: 'Alternates'}
+  //   ]
+  // })
   // .then(function(data) {
   //   if (data) {
   //     data = {"status": "success", data: data};
@@ -90,10 +94,58 @@ router.get('/game/:id', function(req, res) {
   console.log('<----get @ /gameList ---->');
   console.log('req/game/:id request params---> ', req.params);
   console.log('req/game/:id request body---> ', req.body);
+
+  // models.Game.findOne({
+  //   where: {
+  //     id: req.params.id
+  //   }
+  // }).then(function (data) {
+  //   data = {'status': 'success', data: data};
+  //   res.status(200).send(data);
+  // });
+  models.Game.findAll({
+    where: {id: req.params.id},
+    order: [['createdAt', 'DESC']],
+    include: [
+      {model: models.Alternate, as: 'Alternates'}
+    ]
+  })
+  .then(function(data) {
+    if (data) {
+      res.status(200).send({status: 'success', data: data})
+    } else {
+      res.status(404).send({status: 'failed', error: 'Not Found'});
+    }
+  })
+  .catch(function(error) {
+    res.status(500).send({status: 'failed', error: error});
+  });
   res.status(200).send({status: 'success', message: "This will one day be an actual games details", gameId: req.params.id});
 })
 
 // create a game with the details
+router.post("/game/new", function(req, res) {
+  console.log('<---post @ /game/new --->');
+  console.log('req/game/new body---> ', req.body);
+
+  models.Game.create({
+    title:           req.body.title,
+    userId:          req.body.userId,
+    category:        req.body.category,
+    numberOfPlayers: req.body.numberOfPlayers,
+    playerAgeRange:  req.body.playerAgeRange,
+    rules:           req.body.rules
+  })
+  .then(function(data) {
+    data = {"status": "success", data: data};
+    res.status(200).send(data)
+  })
+  .catch(function(err) {
+    err = {"status": "fail", error: err};
+    res.status(500).json(err)
+  })
+
+});
 
 
 // delete a game based on id
