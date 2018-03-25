@@ -107,7 +107,7 @@ router.delete('/user/:username', function(req, res) {
     where: {username: req.params.username}
   })
   .then(function(data) {
-    res.status(200).send(data);
+    res.status(200).send(req.params.username + " deleted.");
   })
   .catch(function(error) {
     res.status(500).send(error);
