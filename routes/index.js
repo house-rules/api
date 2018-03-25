@@ -115,7 +115,7 @@ router.get('/gameList', function(req, res) {
 
 // √√√√ getting a game based on id
 router.get('/game/:id', function(req, res) {
-  models.Game.findAll({
+  models.Game.findOne({
     where: {id: req.params.id},
     include: [{
       model: models.Alternate, as: 'Alternates',
