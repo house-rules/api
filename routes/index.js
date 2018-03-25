@@ -86,24 +86,24 @@ router.get('/gameList', function(req, res) {
   console.log('<----get @ /gameList ---->');
   console.log('req/gameList---> ', req.body);
 
-  // models.Game.findAll({
-  //   include: [
-  //     {model: models.Alternate, as: 'Alternates'}
-  //   ]
-  // })
-  // .then(function(data) {
-  //   if (data) {
-  //     data = {"status": "success", data: data};
-  //     res.status(200).json(data);
-  //   } else {
-  //     res.status(404).send("Data not found")
-  //   }
-  // })
-  // .catch(function(err) {
-  //   err = {"status": "fail", error: err};
-  //   res.status(500).json(err);
-  // })
-  res.status(200).send({status: 'success', message: "This is a placeholder for the gamelist until the db is created"});
+  models.Game.findAll({
+    include: [
+      {model: models.Alternate, as: 'Alternates'}
+    ]
+  })
+  .then(function(data) {
+    if (data) {
+      data = {"status": "success", data: data};
+      res.status(200).json(data);
+    } else {
+      res.status(404).send("Data not found")
+    }
+  })
+  .catch(function(err) {
+    err = {"status": "fail", error: err};
+    res.status(500).json(err);
+  })
+  // res.status(200).send({status: 'success', message: "This is a placeholder for the gamelist until the db is created"});
 })
 
 
@@ -149,23 +149,25 @@ router.post("/game/new", function(req, res) {
   console.log('<---post @ /game/new --->');
   console.log('req/game/new body---> ', req.body);
 
-  // models.Game.create({
-  //   title:           req.body.title,
-  //   userId:          req.body.userId,
-  //   category:        req.body.category,
-  //   numberOfPlayers: req.body.numberOfPlayers,
-  //   playerAgeRange:  req.body.playerAgeRange,
-  //   rules:           req.body.rules,
-  //   productLink:     req.body.productLink
-  // })
-  // .then(function(data) {
-  //   data = {"status": "success", data: data};
-  //   res.status(200).send(data)
-  // })
-  // .catch(function(err) {
-  //   err = {"status": "fail", error: err};
-  //   res.status(500).json(err)
-  // })
+  models.Game.create({
+    title:           req.body.title,
+    userId:          req.body.userId,
+    category:        req.body.category,
+    objective:       req.body.objective,
+    numberOfPlayers: req.body.numberOfPlayers,
+    playerAgeRange:  req.body.playerAgeRange,
+    rules:           req.body.rules,
+    productLink:     req.body.productLink
+  })
+  .then(function(data) {
+    console.log(data);
+    data = {"status": "success", data: data};
+    res.status(200).json(data)
+  })
+  .catch(function(err) {
+    err = {"status": "fail", error: err};
+    res.status(500).json(err)
+  })
 
 });
 
