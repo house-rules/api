@@ -89,6 +89,32 @@ router.post('/signup', function(req, res) {
 });
 
 
+// get all users
+router.get('/user', function(req, res) {
+  models.User.findAll({})
+  .then(function(data) {
+    res.status(200).json(data);
+  })
+  .catch(function(error) {
+    res.status(500).json(error);
+  })
+})
+
+// delete a user from the db
+//in the future we must delete associated data first
+router.delete('/user/:username', function(req, res) {
+  models.User.destroy({
+    where: {username: req.params.username}
+  })
+  .then(function(data) {
+    res.status(200).send(data);
+  })
+  .catch(function(error) {
+    res.status(500).send(error);
+  });
+})
+
+
 // √√√√ getting the entire gamelist with alternates and likes
 router.get('/gameList', function(req, res) {
   models.Game.findAll({
