@@ -34,12 +34,12 @@ router.post("/", function(req, res) {
 // login route
 router.post('/login', function(req, res) {
   console.log("req.body---->>>> ",req.body);
-  if ((!req.body.username) || (!req.body.password)) {
-    res.status(403).send('Fields must not be empty.', req.body)
+  if ((!req.body.email) || (!req.body.password)) {
+    res.status(403).send('Fields must not be empty.')
   } else {
     models.User.findOne({
       where: {
-        username: req.body.username
+        email: req.body.email
       }
     }).then(function(user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
