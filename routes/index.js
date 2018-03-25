@@ -33,6 +33,7 @@ router.post("/", function(req, res) {
 
 // login route
 router.post('/login', function(req, res) {
+  console.log("req.body---->>>> ",req.body);
   if ((!req.body.username) || (!req.body.password)) {
     res.status(403).send('Fields must not be empty.')
   } else {
