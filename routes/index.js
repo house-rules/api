@@ -56,10 +56,10 @@ router.post('/login', function(req, res) {
 
 // √√√√ signup route
 router.post('/signup', function(req, res) {
-  let username = req.body.username;
-  let password = req.body.password;
-  let email     = req.body.email;
-  let confirmPassword = req.body.confirmPassword;
+  let username         = req.body.username;
+  let password         = req.body.password;
+  let email            = req.body.email;
+  let confirmPassword  = req.body.confirmPassword;
 
   if (!username || !password) {
     res.status(403).send({error: 'User name and password must not be blank.'})
@@ -84,7 +84,7 @@ router.post('/signup', function(req, res) {
       res.status('400').send({error: error});
     });
   } else {
-    res.status('403').send({error: "Passwords to not match."})
+    res.status('403').send({error: "Passwords do not match.", body: req.body})
   }
 });
 
@@ -163,16 +163,15 @@ router.post("/game/new", function(req, res) {
 router.delete("/game/:gameId", function(req, res) {
 
   // TODO: We need to destroy any associated data (alternates and likes) before deleting the game
-
-  // models.Game.destroy({
-  //   where: {id: req.params.gameId}
-  // })
-  // .then(function(data) {
-  //   res.status(200).send({status: 'success', data: data});
-  // })
-  // .catch(function(error) {
-  //   res.status(500).send({status: 'failure', error: error});
-  // })
+  models.Game.destroy({
+    where: {id: req.params.gameId}
+  })
+  .then(function(data) {
+    res.status(200).send({status: 'success', data: data});
+  })
+  .catch(function(error) {
+    res.status(500).send({status: 'failure', error: error});
+  })
 })
 
 
@@ -229,19 +228,18 @@ router.post("/game/:userId/alternate/:alternateId/", function(req, res) {
 
 
 // delete a Like route to remove a like from the db
-router.delete('game/:gameId/alternate/:alternate/likes/delete', function(req, res) {
+router.delete('game/:gameId/alternate/:alternate/:likeId/', function(req, res) {
 
   // TODO probably need to find the 'like' first then delete it.
-
-  // models.Like.destroy({
-  //   where: {id: req.params.alternateId}
-  // })
-  // .then(function(data) {
-  //   res.status(200).send({status: 'success', data: data});
-  // })
-  // .catch(function(error) {
-  //   res.status(500).send({status: 'failue', error: error});
-  // });
+  models.Like.destroy({
+    where: {id: req.params.likeId}
+  })
+  .then(function(data) {
+    res.status(200).send({status: 'success', data: data});
+  })
+  .catch(function(error) {
+    res.status(500).send({status: 'failure', error: error});
+  });
 
 });
 
