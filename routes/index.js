@@ -3,6 +3,7 @@ const router          = express.Router();
 const models          = require("../models/index");
 const passport        = require('passport');
 const bcrypt          = require("bcrypt");
+const jwt               = require('jsonwebtoken');
 const BasicStrategy   = require('passport-http').BasicStrategy;
 
 
@@ -32,21 +33,24 @@ router.post("/", function(req, res) {
 
 // login route
 router.post('/login', function(req, res) {
-  models.User.findOne({
-    where: {
-      username: req.body.username
-    }
-  }).then(function(user) {
-    console.log(req.body.password);
-    console.log(user.password);
-    if (bcrypt.compareSync(req.body.password, user.password)) {
-      res.status(200).send(user);
-    } else {
-      res.status(403).send("Username or password does not match.")
-    }
-  }).catch(function(err) {
-    res.status(404).send(err);
-  })
+  if ((!req.body.username) || (!req.body.password)) {
+    res.status(403).send('Fields must not be empty.')
+  } else {
+    models.User.findOne({
+      where: {
+        username: req.body.username
+      }
+    }).then(function(user) {
+      if (bcrypt.compareSync(req.body.password, user.password)) {
+        var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+        res.status(200).send({user: user, auth_token: token});
+      } else {
+        res.status(403).send("Username or password does not match.")
+      }
+    }).catch(function(err) {
+      res.status(404).send(err);
+    })
+  }
 });
 
 
