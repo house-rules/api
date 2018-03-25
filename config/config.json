@@ -16,7 +16,7 @@
   "production": {
     "username": "josephgordy",
     "password": null,
-    "database": "database_production",
+    "database": "postgresql-acute-68313",
     "use_env_variable": "DATABASE_URL",
     "host": "127.0.0.1",
     "dialect": "postgres"
