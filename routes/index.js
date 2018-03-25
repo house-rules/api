@@ -220,7 +220,7 @@ router.post("/game/:gameid/alternate", function(req, res) {
 
 
 // delete an alternate version of a game based on gameId and alternateId
-router.delete('game/:gameId/alternate/:alternateId/delete', function(req, res) {
+router.delete('/game/:gameId/alternate/:alternateId/delete', function(req, res) {
   models.Alternate.destroy({
     where: {id: req.params.alternateId}
   })
@@ -254,7 +254,7 @@ router.post("/game/:userId/alternate/:alternateId/", function(req, res) {
 
 
 // delete a Like route to remove a like from the db
-router.delete('game/:gameId/alternate/:alternateId/:likeId/', function(req, res) {
+router.delete('/game/:gameId/alternate/:alternateId/:likeId/', function(req, res) {
 
   // TODO probably need to find the 'like' first then delete it.
   models.Like.destroy({
