@@ -33,9 +33,8 @@ router.post("/", function(req, res) {
 
 // login route
 router.post('/login', function(req, res) {
-  console.log("req.body---->>>> ",req.body);
   if ((!req.body.email) || (!req.body.password)) {
-    res.status(403).send({message: 'Fields must not be empty.', body: req.body})
+    res.status(403).send({error: 'Fields must not be empty.'})
   } else {
     models.User.findOne({
       where: {
@@ -46,10 +45,10 @@ router.post('/login', function(req, res) {
         var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
         res.status(200).send({user: user, auth_token: token});
       } else {
-        res.status(403).send("Username or password does not match.")
+        res.status(403).send({error: "Username or password does not match."})
       }
     }).catch(function(err) {
-      res.status(404).send(err);
+      res.status(404).send({error: err});
     })
   }
 });
