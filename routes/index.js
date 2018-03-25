@@ -254,7 +254,7 @@ router.post("/game/:userId/alternate/:alternateId/", function(req, res) {
 
 
 // delete a Like route to remove a like from the db
-router.delete('game/:gameId/alternate/:alternate/:likeId/', function(req, res) {
+router.delete('game/:gameId/alternate/:alternateId/:likeId/', function(req, res) {
 
   // TODO probably need to find the 'like' first then delete it.
   models.Like.destroy({
