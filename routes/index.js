@@ -6,7 +6,6 @@ const bcrypt          = require("bcrypt");
 const BasicStrategy   = require('passport-http').BasicStrategy;
 
 
-
 passport.use(new BasicStrategy(
   function(username, password, done) {
       const userPassword = users[username];
@@ -33,21 +32,30 @@ router.post("/", function(req, res) {
 
 // login route
 router.post('/login', function(req, res) {
-  console.log('<----post @ /login ---->');
-  console.log('req/login---> ', req.body);
-  res.status(200).send(req.body);
+  models.User.findOne({
+    where: {
+      username: req.body.username
+    }
+  }).then(function(user) {
+    console.log(req.body.password);
+    console.log(user.password);
+    if (bcrypt.compareSync(req.body.password, user.password)) {
+      res.status(200).send(user);
+    } else {
+      res.status(403).send("Username or password does not match.")
+    }
+  }).catch(function(err) {
+    res.status(404).send(err);
+  })
 });
 
 
-// signup route
+// √√√√ signup route
 router.post('/signup', function(req, res) {
-  console.log('<----post @ /signup ---->');
-  console.log('req/signup---> ', req.body);
-
-  let username = req.body.username
-  let password = req.body.password
-  let email     = req.body.email
-  let confirmPassword = req.body.confirmPassword
+  let username = req.body.username;
+  let password = req.body.password;
+  let email     = req.body.email;
+  let confirmPassword = req.body.confirmPassword;
 
   if (!username || !password) {
     res.status(403).send('User name and password must not be blank.')
@@ -63,92 +71,70 @@ router.post('/signup', function(req, res) {
     password: passwordHash
   }
 
-  console.log(newUser);
-
   if (password === confirmPassword) {
     models.User.create(newUser)
     .then(function(data) {
-      res.status('201').send({status: 'success', data: data});
+      res.status('201').send(data);
     })
     .catch(function(error) {
-      res.status('400').send({status: 'failed', error: error});
+      res.status('400').send(error);
     });
   } else {
-    res.status('').send({status: "failed", error: "Passwords to not match."})
+    res.status('403').send("Passwords to not match.")
   }
-
-  // res.status(200).send(newUser);
 });
 
 
-// getting the entire gamelist
+// √√√√ getting the entire gamelist with alternates and likes
 router.get('/gameList', function(req, res) {
-  console.log('<----get @ /gameList ---->');
-  console.log('req/gameList---> ', req.body);
-
   models.Game.findAll({
-    include: [
-      {model: models.Alternate, as: 'Alternates'}
-    ]
+    include: [{
+       model: models.Alternate,
+       as: 'Alternates',
+       include: [{
+         model: models.Like, as: "Likes"
+       }]
+     }]
   })
   .then(function(data) {
     if (data) {
-      data = {"status": "success", data: data};
       res.status(200).json(data);
     } else {
-      res.status(404).send("Data not found")
+      res.status(404).send("No games found")
     }
   })
   .catch(function(err) {
-    err = {"status": "fail", error: err};
     res.status(500).json(err);
   })
-  // res.status(200).send({status: 'success', message: "This is a placeholder for the gamelist until the db is created"});
-})
-
-
-// getting a game based on id
-router.get('/game/:id', function(req, res) {
-  console.log('<----get @ /gameList ---->');
-  console.log('req/game/:id request params---> ', req.params);
-  console.log('req/game/:id request body---> ', req.body);
-
-  // models.Game.findOne({
-  //   where: {
-  //     id: req.params.id
-  //   }
-  // }).then(function (data) {
-  //   data = {'status': 'success', data: data};
-  //   res.status(200).send(data);
-  // });
-
-  // models.Game.findAll({
-  //   where: {id: req.params.id},
-  //   order: [['createdAt', 'DESC']],
-  //   include: [
-  //     {model: models.Alternate, as: 'Alternates'}
-  //   ]
-  // })
-  // .then(function(data) {
-  //   if (data) {
-  //     res.status(200).send({status: 'success', data: data})
-  //   } else {
-  //     res.status(404).send({status: 'failed', error: 'Not Found'});
-  //   }
-  // })
-  // .catch(function(error) {
-  //   res.status(500).send({status: 'failed', error: error});
-  // });
-
-  res.status(200).send({status: 'success', message: "This will one day be an actual games details", gameId: req.params.id});
 });
 
 
-// create a game with the details
-router.post("/game/new", function(req, res) {
-  console.log('<---post @ /game/new --->');
-  console.log('req/game/new body---> ', req.body);
+// √√√√ getting a game based on id
+router.get('/game/:id', function(req, res) {
+  models.Game.findAll({
+    where: {id: req.params.id},
+    include: [{
+      model: models.Alternate, as: 'Alternates',
+      include: [{
+        model: models.Like, as: "Likes"
+      }]
+    }]
+  })
+  .then(function(data) {
+    if (data) {
+      res.status(200).send(data)
+    } else {
+      res.status(404).send('Not Found');
+    }
+  })
+  .catch(function(error) {
+    res.status(500).send(error);
+  });
+});
 
+
+// √√√√ create a game with the details
+router.post("/game/new", function(req, res) {
   models.Game.create({
     title:           req.body.title,
     userId:          req.body.userId,
@@ -160,15 +146,11 @@ router.post("/game/new", function(req, res) {
     productLink:     req.body.productLink
   })
   .then(function(data) {
-    console.log(data);
-    data = {"status": "success", data: data};
     res.status(200).json(data)
   })
   .catch(function(err) {
-    err = {"status": "fail", error: err};
     res.status(500).json(err)
   })
-
 });
 
 
@@ -190,11 +172,8 @@ router.delete("/game/:gameId", function(req, res) {
 })
 
 
-// create an alternate version of a game based on gameId
+// √√√√√ create an alternate version of a game based on gameId
 router.post("/game/:gameid/alternate", function(req, res) {
-  console.log('<---post @ /game/:gameid/alternate --->');
-  console.log('req/game/:gameId/alternate body---> ', req.body);
-
   models.Alternate.create({
     gameId:    req.body.gameId,
     userId:    req.body.userId,
@@ -203,46 +182,45 @@ router.post("/game/:gameid/alternate", function(req, res) {
     rules:     req.body.rules
   })
   .then(function(data) {
-    res.status(201).send({status: 'success', data: data});
+    res.status(201).send(data);
   })
   .catch(function(error) {
-    res.status(500).send({status: 'failure', error: error})
+    res.status(500).send(error)
   });
-
 });
 
 
 // delete an alternate version of a game based on gameId and alternateId
 router.delete('game/:gameId/alternate/:alternateId/delete', function(req, res) {
-
   models.Alternate.destroy({
     where: {id: req.params.alternateId}
   })
   .then(function(data) {
-    res.status(200).send({status: 'success', data: data});
+    res.status(200).send(data);
   })
   .catch(function(error) {
-    res.status(500).send({status: 'failue', error: error});
+    res.status(500).send(error);
   });
-
 });
 
-// create a Likes route to add a like to the db
-router.post("/game/:gameId/alternate/:alternateId/", function(req, res) {
-
-  models.Like.create({
-    gameId:  req.body.gameId,
-    userId:  req.body.userId
+// √√√√ create a Likes route to add a like to the db
+router.post("/game/:userId/alternate/:alternateId/", function(req, res) {
+  models.Like.findOrCreate({
+    where: {
+      userId: req.params.userId,
+      alternateId: req.params.alternateId
+    },
+      defaults: {
+        userId: req.params.userId,
+        alternateId: req.params.alternateId
+      }
   })
   .then(function(data) {
-    data = {"status": "success", data: data};
     res.status(200).send(data)
   })
   .catch(function(err) {
-    err = {"status": "fail", error: err};
     res.status(500).json(err)
   });
-
 })
 
 
@@ -262,6 +240,26 @@ router.delete('game/:gameId/alternate/:alternate/likes/delete', function(req, re
   // });
 
 });
+
+
+// get all alternates
+router.get('/alternates', function(req, res) {
+  models.Alternate.findAll({
+    include: [
+      {model: models.Like, as: 'Likes'}
+    ]
+  })
+  .then(function(data) {
+    if (data) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).send("Data not found")
+    }
+  })
+  .catch(function(err) {
+    res.status(500).json(err);
+  })
+})
 
 
 module.exports = router;
