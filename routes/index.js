@@ -35,7 +35,7 @@ router.post("/", function(req, res) {
 router.post('/login', function(req, res) {
   console.log("req.body---->>>> ",req.body);
   if ((!req.body.email) || (!req.body.password)) {
-    res.status(403).send('Fields must not be empty.')
+    res.status(403).send({message: 'Fields must not be empty.', body: req.body})
   } else {
     models.User.findOne({
       where: {
