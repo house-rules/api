@@ -62,7 +62,7 @@ router.post('/signup', function(req, res) {
   let confirmPassword = req.body.confirmPassword;
 
   if (!username || !password) {
-    res.status(403).send('User name and password must not be blank.')
+    res.status(403).send({error: 'User name and password must not be blank.'})
   }
 
   let salt = bcrypt.genSaltSync(10)
@@ -81,10 +81,10 @@ router.post('/signup', function(req, res) {
       res.status('201').send(data);
     })
     .catch(function(error) {
-      res.status('400').send(error);
+      res.status('400').send({error: error});
     });
   } else {
-    res.status('403').send("Passwords to not match.")
+    res.status('403').send({error: "Passwords to not match."})
   }
 });
 
